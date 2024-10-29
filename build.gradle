@@ -12,7 +12,10 @@ version '1.0-SNAPSHOT'
 application {
     mainClassName = 'ru.mipt.bit.platformer.GameDesktopLauncher'
     if (Os.isFamily(Os.FAMILY_MAC)) {
-        applicationDefaultJvmArgs = ['-XstartOnFirstThread']
+        applicationDefaultJvmArgs = [
+                '-XstartOnFirstThread',
+                "-Djava.library.path=$projectDir/libs"
+        ]
     }
 }
 
@@ -20,6 +23,9 @@ repositories {
     mavenCentral()
 }
 
+java {
+    sourceSets.main.runtimeClasspath += files("$projectDir/libs/")
+}
 dependencies {
     implementation deps.gdx.gdx
     implementation deps.gdx.backend_lwjgl3
