@@ -9,12 +9,19 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Interpolation;
+import ru.mipt.bit.platformer.abstractions.ModelController;
 
-import ru.mipt.bit.platformer.abstractions.Field;
-import ru.mipt.bit.platformer.abstractions.Tree;
-import ru.mipt.bit.platformer.abstractions.Tank;
-
+import ru.mipt.bit.platformer.abstractions.models.BaseModel;
+import ru.mipt.bit.platformer.abstractions.models.Field;
+import ru.mipt.bit.platformer.abstractions.models.Tree;
+import ru.mipt.bit.platformer.abstractions.models.Tank;
+import ru.mipt.bit.platformer.abstractions.graphics.GraphicsAbstraction;
+import ru.mipt.bit.platformer.abstractions.handlers.InputHandler;
+import ru.mipt.bit.platformer.abstractions.handlers.TankInputHandler;
 import ru.mipt.bit.platformer.util.TileMovement;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
 
@@ -22,9 +29,11 @@ public class GameDesktopLauncher implements ApplicationListener {
 
     private Batch batch;
     private Field field;
-    private Tank tank;
-    private Tree tree;
+    private List<BaseModel> models;
     private TileMovement tileMovement;
+    private InputHandler inputHandler;
+    private ModelController modelController;
+
 
     @Override
     public void create() {
@@ -34,8 +43,12 @@ public class GameDesktopLauncher implements ApplicationListener {
         TiledMapTileLayer groundLayer = field.getLayer();
         tileMovement = new TileMovement(groundLayer, Interpolation.smooth);
 
-        tank = new Tank("images/tank_blue.png", new GridPoint2(1, 1), 0.4f);
-        tree = new Tree("images/greenTree.png", new GridPoint2(1, 3), groundLayer);
+        models = new ArrayList<>();
+        GraphicsAbstraction graphicsAbstraction = new GraphicsAbstraction();
+
+        models.add(new Tank("images/tank_blue.png", new GridPoint2(1, 1), 0.4f, graphicsAbstraction, new TankInputHandler()));
+        models.add(new Tree("images/greenTree.png", new GridPoint2(1, 3), groundLayer, graphicsAbstraction));
+        modelController = new ModelController(models, tileMovement, graphicsAbstraction);
     }
 
     @Override
@@ -45,15 +58,13 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         float deltaTime = Gdx.graphics.getDeltaTime();
 
-        tank.handleInput();
-        if (!tree.collidesWith(tank.getDestination())) {
-            tank.updatePosition(tileMovement, deltaTime);
-        }
-        field.render();
+        modelController.updateModels(deltaTime);
 
+        models.sort(Comparator.comparingInt(model -> -model.getPosition().y));
+        field.render();
         batch.begin();
-        tank.render(batch);
-        tree.render(batch);
+        modelController.renderModels(batch);
+
         batch.end();
     }
 
@@ -61,8 +72,8 @@ public class GameDesktopLauncher implements ApplicationListener {
     public void dispose() {
         batch.dispose();
         field.dispose();
-        tank.dispose();
-        tree.dispose();
+        modelController.disposeModels();
+
     }
 
     @Override
@@ -76,6 +87,7 @@ public class GameDesktopLauncher implements ApplicationListener {
     @Override
     public void resume() {
     }
+
 
     public static void main(String[] args) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();

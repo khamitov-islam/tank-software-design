@@ -1,4 +1,4 @@
-package ru.mipt.bit.platformer.abstractions;
+package ru.mipt.bit.platformer.abstractions.models;
 
 import com.badlogic.gdx.math.GridPoint2;
 
