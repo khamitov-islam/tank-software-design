@@ -1,4 +1,4 @@
-package ru.mipt.bit.platformer.abstractions.graphics;
+package ru.mipt.bit.platformer.abstractions.controllers;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.GridPoint2;
