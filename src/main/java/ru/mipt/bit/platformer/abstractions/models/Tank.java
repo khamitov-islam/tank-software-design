@@ -14,7 +14,7 @@ import ru.mipt.bit.platformer.util.TileMovement;
 public class Tank extends BaseModel implements Movable, Renderable {
 
     private final float movementSpeed;
-
+    //private boolean isMoving;
     private GridPoint2 currentCoordinates;
     private GridPoint2 destinationCoordinates;
     private float movementProgress = 1f;
@@ -36,10 +36,17 @@ public class Tank extends BaseModel implements Movable, Renderable {
         if (isReadyForNextMove()) {
             Direction direction = inputHandler.handleInput();
             if (direction != null) {
-                destinationCoordinates = direction.move(currentCoordinates);
-                rotation = direction.getRotation();
-                movementProgress = 0f;
+                setDestination(direction);
             }
+        }
+    }
+
+
+    public void setDestination(Direction direction) {
+        if(isReadyForNextMove()) {
+            this.destinationCoordinates = direction.move(this.currentCoordinates);
+            this.rotation = direction.getRotation();
+            this.movementProgress = 0f;
         }
     }
 
@@ -47,10 +54,11 @@ public class Tank extends BaseModel implements Movable, Renderable {
         tileMovement.moveRectangleBetweenTileCenters(getRectangle(), currentCoordinates, destinationCoordinates, movementProgress);
         movementProgress = continueProgress(movementProgress, deltaTime, movementSpeed);
         if (isReadyForNextMove()) {
-            currentCoordinates.set(destinationCoordinates);
-
+            currentCoordinates = destinationCoordinates;
         }
     }
+
+    public GridPoint2 getCurrentCoordinates() { return currentCoordinates;}
 
     public GridPoint2 getDestination() {
         return new GridPoint2(destinationCoordinates);
@@ -69,11 +77,7 @@ public class Tank extends BaseModel implements Movable, Renderable {
         return isEqual(movementProgress, 1f);
     }
 
-    public void setDestination(GridPoint2 destination, float rotation) {
-        this.destinationCoordinates.set(destination);
-        this.rotation = rotation;
-        this.movementProgress = 0f;
-    }
+
     public boolean isAITank(){
         return inputHandler == null;
     }

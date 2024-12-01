@@ -2,6 +2,7 @@ package ru.mipt.bit.platformer.abstractions.level;
 
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
+import ru.mipt.bit.platformer.abstractions.controllers.CollisionController;
 import ru.mipt.bit.platformer.abstractions.controllers.GraphicsAbstraction;
 import ru.mipt.bit.platformer.abstractions.handlers.TankInputHandler;
 import ru.mipt.bit.platformer.abstractions.models.BaseModel;
@@ -15,9 +16,12 @@ import static com.badlogic.gdx.math.MathUtils.random;
 
 public class RandomLevel extends AbstractLevel {
     private static final int DEFAULT_TREES = 10;
+    private Tank playerTank;
 
-    public RandomLevel(TileMovement tileMovement) {
-        super(tileMovement);
+
+    public RandomLevel(TileMovement tileMovement, CollisionController collisionController) {
+        super(tileMovement, collisionController);
+        this.playerTank = null;
     }
 
     @Override
@@ -40,5 +44,8 @@ public class RandomLevel extends AbstractLevel {
 
         // Создаем AI танки
         generateAITanks(models, graphicsAbstraction);
+    }
+    public Tank getPlayerTank(){
+        return playerTank;
     }
 }

@@ -1,5 +1,6 @@
 package ru.mipt.bit.platformer.abstractions.level;
 import ru.mipt.bit.platformer.abstractions.controllers.AITankController;
+import ru.mipt.bit.platformer.abstractions.controllers.CollisionController;
 import ru.mipt.bit.platformer.abstractions.level.AbstractLevel;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 
@@ -24,10 +25,12 @@ import static com.badlogic.gdx.math.MathUtils.random;
 
 public class FileLevel extends AbstractLevel implements Level{
     private final String filePath;
+    private Tank playerTank;
 
-    public FileLevel(String filePath, TileMovement tileMovement) {
-        super(tileMovement);
+    public FileLevel(String filePath, TileMovement tileMovement, CollisionController collisionController) {
+        super(tileMovement, collisionController);
         this.filePath = filePath;
+        this.playerTank = null;
     }
 
     @Override
@@ -64,6 +67,10 @@ public class FileLevel extends AbstractLevel implements Level{
             throw new RuntimeException(e);
         }
     }
+
+    public Tank getPlayerTank(){
+        return playerTank;
+    };
 
 }
 

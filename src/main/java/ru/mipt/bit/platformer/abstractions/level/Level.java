@@ -5,6 +5,7 @@ import ru.mipt.bit.platformer.abstractions.controllers.AITankController;
 import ru.mipt.bit.platformer.abstractions.controllers.CollisionController;
 import ru.mipt.bit.platformer.abstractions.controllers.GraphicsAbstraction;
 import ru.mipt.bit.platformer.abstractions.models.BaseModel;
+import ru.mipt.bit.platformer.abstractions.models.Tank;
 
 import java.util.List;
 import java.util.Set;
@@ -14,5 +15,7 @@ public interface Level {
     int getLevelWidth();
     int getLevelHeight();
     CollisionController getCollisionController();
-    List<AITankController> getAiControllers();
+    List<AITankController> getAIControllers();
+    Tank getPlayerTank();
+
 }

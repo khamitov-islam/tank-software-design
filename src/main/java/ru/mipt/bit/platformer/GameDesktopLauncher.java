@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Interpolation;
 import ru.mipt.bit.platformer.abstractions.controllers.AITankController;
+import ru.mipt.bit.platformer.abstractions.controllers.CollisionController;
 import ru.mipt.bit.platformer.abstractions.controllers.ModelController;
 import ru.mipt.bit.platformer.abstractions.level.FileLevel;
 import ru.mipt.bit.platformer.abstractions.level.Level;
@@ -20,7 +21,10 @@ import ru.mipt.bit.platformer.abstractions.handlers.InputHandler;
 import ru.mipt.bit.platformer.util.TileMovement;
 
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
+
 import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
 
 
@@ -30,16 +34,13 @@ public class GameDesktopLauncher implements ApplicationListener {
     private Field field;
     private List<BaseModel> models;
     private TileMovement tileMovement;
-    // private InputHandler inputHandler;
     private ModelController modelController;
     private Level level;
-    // private final List<AITankController> aiTankControllers;
-
+    private CollisionController collisionController;
     Config config = Config.DEFAULT;
 
     GameDesktopLauncher (Config config) {
         this.config = config;
-        // aiTankControllers = new ArrayList<>();
 
     }
 
@@ -52,18 +53,22 @@ public class GameDesktopLauncher implements ApplicationListener {
         tileMovement = new TileMovement(groundLayer, Interpolation.smooth);
         models = new ArrayList<>();
         GraphicsAbstraction graphicsAbstraction = new GraphicsAbstraction();
+        collisionController = new CollisionController(tileMovement);
 
-        // Create appropriate level based on config
+
         if (config == Config.DEFAULT) {
-            level = new RandomLevel(tileMovement);
+            level = new RandomLevel(tileMovement, collisionController);
         } else if (config == Config.FILE) {
-            level = new FileLevel("file_loading_test/test1.txt", tileMovement);
+            level = new FileLevel("file_loading_test/test1.txt", tileMovement, collisionController);
         }
 
-        // Generate level
+
         level.generate(models, groundLayer, graphicsAbstraction);
 
-        modelController = new ModelController(models, tileMovement, graphicsAbstraction, level.getCollisionController(), level.getAiControllers());
+        collisionController.update(models);
+        modelController = new ModelController(models, tileMovement, graphicsAbstraction,
+                collisionController , level.getPlayerTank(), level.getAIControllers()); //
+
     }
 
 
@@ -88,7 +93,6 @@ public class GameDesktopLauncher implements ApplicationListener {
         batch.dispose();
         field.dispose();
         modelController.disposeModels();
-
     }
 
     @Override

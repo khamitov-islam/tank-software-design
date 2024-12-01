@@ -15,15 +15,16 @@ import java.util.List;
 import static com.badlogic.gdx.math.MathUtils.random;
 
 public abstract class AbstractLevel implements Level {
-    protected List<AITankController> aiControllers;
     protected TileMovement tileMovement;
     protected Tank playerTank;
-    protected CollisionController collisionController;
+    protected List<AITankController> aiControllers;
+    protected final CollisionController collisionController;
 
-    public AbstractLevel(TileMovement tileMovement) {
+    public AbstractLevel(TileMovement tileMovement, CollisionController collisionController) {
         this.tileMovement = tileMovement;
+        this.collisionController = collisionController;
+        this.playerTank = null;
         this.aiControllers = new ArrayList<>();
-        this.collisionController = new CollisionController(tileMovement);
     }
 
     protected void generateAITanks(List<BaseModel> models, GraphicsAbstraction graphicsAbstraction) {
@@ -34,8 +35,8 @@ public abstract class AbstractLevel implements Level {
             Tank aiTank = new Tank("images/tank_blue.png", position, 0.4f,
                     graphicsAbstraction, null);
             models.add(aiTank);
-            collisionController.addOccupiedPosition(position);
-            aiControllers.add(new AITankController(aiTank, tileMovement, collisionController));
+            this.collisionController.addOccupiedPosition(position);
+            aiControllers.add(new AITankController(aiTank, tileMovement));
         }
     }
 
@@ -61,11 +62,13 @@ public abstract class AbstractLevel implements Level {
         return tileMovement.getWidth();
     }
 
+    @Override
     public CollisionController getCollisionController(){
         return collisionController;
     }
 
-    public List<AITankController> getAiControllers(){
+    @Override
+    public List<AITankController> getAIControllers() {
         return aiControllers;
-    }
+    };
 }
