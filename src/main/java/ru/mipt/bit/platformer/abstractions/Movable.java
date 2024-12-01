@@ -1,4 +1,4 @@
-package ru.mipt.bit.platformer.abstractions.movement;
+package ru.mipt.bit.platformer.abstractions;
 
 import ru.mipt.bit.platformer.util.TileMovement;
 

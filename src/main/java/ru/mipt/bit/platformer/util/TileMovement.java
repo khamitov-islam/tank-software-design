@@ -32,5 +32,15 @@ public class TileMovement {
         return rectangle
                 .setX(intermediateBottomLeftX)
                 .setY(intermediateBottomLeftY);
+
+
+    }
+
+    public int getWidth(){
+        return tileLayer.getWidth();
+    }
+
+    public int getHeight(){
+        return tileLayer.getHeight();
     }
 }
