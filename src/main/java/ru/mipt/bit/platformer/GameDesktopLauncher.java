@@ -2,13 +2,13 @@ package ru.mipt.bit.platformer;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Interpolation;
-import ru.mipt.bit.platformer.abstractions.controllers.AITankController;
 import ru.mipt.bit.platformer.abstractions.controllers.CollisionController;
 import ru.mipt.bit.platformer.abstractions.controllers.ModelController;
 import ru.mipt.bit.platformer.abstractions.level.FileLevel;
@@ -16,9 +16,9 @@ import ru.mipt.bit.platformer.abstractions.level.Level;
 import ru.mipt.bit.platformer.abstractions.level.RandomLevel;
 import ru.mipt.bit.platformer.abstractions.models.BaseModel;
 import ru.mipt.bit.platformer.abstractions.models.Field;
-import ru.mipt.bit.platformer.abstractions.controllers.GraphicsAbstraction;
-import ru.mipt.bit.platformer.abstractions.handlers.InputHandler;
+import ru.mipt.bit.platformer.abstractions.graphics.GraphicsAbstraction;
 import ru.mipt.bit.platformer.util.TileMovement;
+import ru.mipt.bit.platformer.abstractions.command.ToggleHealthDisplayCommand;
 
 
 import java.awt.*;
@@ -37,6 +37,7 @@ public class GameDesktopLauncher implements ApplicationListener {
     private ModelController modelController;
     private Level level;
     private CollisionController collisionController;
+    private ToggleHealthDisplayCommand toggleHealthDisplayCommand;
     Config config = Config.DEFAULT;
 
     GameDesktopLauncher (Config config) {
@@ -56,6 +57,7 @@ public class GameDesktopLauncher implements ApplicationListener {
         collisionController = new CollisionController(tileMovement);
 
 
+
         if (config == Config.DEFAULT) {
             level = new RandomLevel(tileMovement, collisionController);
         } else if (config == Config.FILE) {
@@ -65,9 +67,11 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         level.generate(models, groundLayer, graphicsAbstraction);
 
+        toggleHealthDisplayCommand = new ToggleHealthDisplayCommand(models, batch);
+
         collisionController.update(models);
         modelController = new ModelController(models, tileMovement, graphicsAbstraction,
-                collisionController , level.getPlayerTank(), level.getAIControllers()); //
+                collisionController , level.getPlayerTank(), level.getAIControllers(), toggleHealthDisplayCommand); //
 
     }
 
@@ -79,12 +83,21 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         float deltaTime = Gdx.graphics.getDeltaTime();
 
+
         modelController.updateModels(deltaTime);
+
 
         models.sort(Comparator.comparingInt(model -> -model.getPosition().y));
         field.render();
+
         batch.begin();
+
+
+
         modelController.renderModels(batch);
+
+        //toggleHealthDisplayCommand.showHealthDisplay();
+
         batch.end();
     }
 

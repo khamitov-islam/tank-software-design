@@ -1,6 +1,5 @@
 package ru.mipt.bit.platformer.abstractions.controllers;
 
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.abstractions.models.BaseModel;
 import ru.mipt.bit.platformer.abstractions.models.Direction;
@@ -8,7 +7,6 @@ import ru.mipt.bit.platformer.abstractions.models.Tank;
 import ru.mipt.bit.platformer.abstractions.models.Tree;
 import ru.mipt.bit.platformer.util.TileMovement;
 
-import javax.naming.NamingException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -66,8 +64,6 @@ public class CollisionController {
 
     public void clearOccupiedPositions(){ occupiedPositions.clear(); }
 
-    public void removeOccupiedPosition(GridPoint2 previousPosition){occupiedPositions.remove(previousPosition);}
-
     public void update(List<BaseModel> models) {
         clearOccupiedPositions();
 
@@ -78,9 +74,6 @@ public class CollisionController {
             if (model instanceof Tank) {
                 Tank tank = (Tank) model;
                 addOccupiedPosition(tank.getCurrentCoordinates());
-//                if (tank.isReadyForNextMove()) {
-//                    addOccupiedPosition(tank.getDestination());
-//                }
             }
         }
     }
