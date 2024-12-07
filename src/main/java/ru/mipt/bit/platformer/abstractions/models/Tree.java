@@ -3,7 +3,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.*;
-import ru.mipt.bit.platformer.abstractions.controllers.GraphicsAbstraction;
+import ru.mipt.bit.platformer.abstractions.graphics.GraphicsAbstraction;
 import ru.mipt.bit.platformer.abstractions.Renderable;
 
 

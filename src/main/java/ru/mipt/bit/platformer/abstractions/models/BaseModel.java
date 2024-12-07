@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Rectangle;
-import ru.mipt.bit.platformer.abstractions.controllers.GraphicsAbstraction;
+import ru.mipt.bit.platformer.abstractions.graphics.GraphicsAbstraction;
 
 import static ru.mipt.bit.platformer.util.GdxGameUtils.createBoundingRectangle;
 

@@ -1,7 +1,9 @@
 package ru.mipt.bit.platformer.abstractions.models;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.GridPoint2;
-import ru.mipt.bit.platformer.abstractions.controllers.GraphicsAbstraction;
+import ru.mipt.bit.platformer.abstractions.Liveable;
+import ru.mipt.bit.platformer.abstractions.command.MoveTankCommand;
+import ru.mipt.bit.platformer.abstractions.graphics.GraphicsAbstraction;
 import ru.mipt.bit.platformer.abstractions.Movable;
 
 import static com.badlogic.gdx.math.MathUtils.isEqual;
@@ -11,7 +13,9 @@ import ru.mipt.bit.platformer.abstractions.Renderable;
 import ru.mipt.bit.platformer.abstractions.handlers.InputHandler;
 import ru.mipt.bit.platformer.util.TileMovement;
 
-public class Tank extends BaseModel implements Movable, Renderable {
+import java.util.Random;
+
+public class Tank extends BaseModel implements Movable, Renderable, Liveable {
 
     private final float movementSpeed;
     //private boolean isMoving;
@@ -20,6 +24,7 @@ public class Tank extends BaseModel implements Movable, Renderable {
     private float movementProgress = 1f;
     private float rotation;
     private final InputHandler inputHandler;
+    private int  health;
 
 
     public Tank(String texturePath, GridPoint2 initialCoordinates, float movementSpeed, GraphicsAbstraction graphicsAbstraction, InputHandler inputHandler) {
@@ -29,6 +34,7 @@ public class Tank extends BaseModel implements Movable, Renderable {
         this.movementSpeed = movementSpeed;
         this.rotation = 0f;
         this.inputHandler = inputHandler;
+        this.health = new Random().nextInt(21) + 80; // 80 - 100
     }
 
     @Override
@@ -36,13 +42,15 @@ public class Tank extends BaseModel implements Movable, Renderable {
         if (isReadyForNextMove()) {
             Direction direction = inputHandler.handleInput();
             if (direction != null) {
-                setDestination(direction);
+                MoveTankCommand move = new MoveTankCommand(this, direction);
+                move.execute();
+                //setDestination(direction);
             }
         }
     }
 
 
-    public void setDestination(Direction direction) {
+    public void move(Direction direction) { //move // setDestination
         if(isReadyForNextMove()) {
             this.destinationCoordinates = direction.move(this.currentCoordinates);
             this.rotation = direction.getRotation();
@@ -77,8 +85,11 @@ public class Tank extends BaseModel implements Movable, Renderable {
         return isEqual(movementProgress, 1f);
     }
 
+    public int getHealth() {
+        return health;
+    }
 
-    public boolean isAITank(){
-        return inputHandler == null;
+    public void setHealth(int health) {
+        this.health = health;
     }
 }

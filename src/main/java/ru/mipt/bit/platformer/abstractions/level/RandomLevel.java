@@ -3,7 +3,7 @@ package ru.mipt.bit.platformer.abstractions.level;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.abstractions.controllers.CollisionController;
-import ru.mipt.bit.platformer.abstractions.controllers.GraphicsAbstraction;
+import ru.mipt.bit.platformer.abstractions.graphics.GraphicsAbstraction;
 import ru.mipt.bit.platformer.abstractions.handlers.TankInputHandler;
 import ru.mipt.bit.platformer.abstractions.models.BaseModel;
 import ru.mipt.bit.platformer.abstractions.models.Tank;

@@ -1,13 +1,10 @@
 package ru.mipt.bit.platformer.abstractions.controllers;
 import com.badlogic.gdx.math.GridPoint2;
+import ru.mipt.bit.platformer.abstractions.command.MoveTankCommand;
 import ru.mipt.bit.platformer.abstractions.models.Direction;
 import ru.mipt.bit.platformer.abstractions.models.Tank;
 import ru.mipt.bit.platformer.util.TileMovement;
-import java.util.ArrayList;
-import java.util.List;
 
-import static com.badlogic.gdx.math.MathUtils.clamp;
-import static com.badlogic.gdx.math.MathUtils.random;
 
 public class AITankController {
     private final Tank aiTank;
@@ -24,7 +21,9 @@ public class AITankController {
             Direction chosenDirection = collisionController.getNextDirection(aiTank);
             if (chosenDirection != null){
                 GridPoint2 nextPosition = chosenDirection.move(aiTank.getCurrentCoordinates());
-                aiTank.setDestination(chosenDirection);
+                MoveTankCommand aiMove = new MoveTankCommand(aiTank, chosenDirection);
+                aiMove.execute();
+                // aiTank.setDestination(chosenDirection);
                 collisionController.addOccupiedPosition(nextPosition);
             } else {
                 aiTank.cancelMovement();
@@ -33,7 +32,4 @@ public class AITankController {
         aiTank.updatePosition(tileMovement, deltaTime);
     }
 
-    public Tank getTank(){
-        return aiTank;
-    }
 }
