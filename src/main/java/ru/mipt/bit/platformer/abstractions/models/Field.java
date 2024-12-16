@@ -4,6 +4,8 @@ import com.badlogic.gdx.maps.MapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import ru.mipt.bit.platformer.abstractions.Renderable;
+
 import static ru.mipt.bit.platformer.util.GdxGameUtils.createSingleLayerMapRenderer;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.getSingleLayer;
 
@@ -16,6 +18,7 @@ public class Field {
         this.map = new TmxMapLoader().load(mapPath);
         this.renderer = createSingleLayerMapRenderer(map, batch);
     }
+
     public void render() {
         renderer.render();
     }

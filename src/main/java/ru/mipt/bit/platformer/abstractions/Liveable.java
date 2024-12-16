@@ -4,6 +4,6 @@ import com.badlogic.gdx.math.Rectangle;
 
 public interface Liveable {
     int getHealth();
-    //void setHealth(int health);
-    Rectangle getRectangle();
+    void setHealth(int health);
+    //Rectangle getRectangle();
 }

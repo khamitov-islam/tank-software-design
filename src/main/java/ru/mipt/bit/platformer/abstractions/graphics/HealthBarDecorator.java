@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ru.mipt.bit.platformer.abstractions.Liveable;
 import ru.mipt.bit.platformer.abstractions.Renderable;
+import ru.mipt.bit.platformer.abstractions.models.BaseModel;
 import ru.mipt.bit.platformer.abstractions.models.HealthBarModel;
 import ru.mipt.bit.platformer.util.GdxGameUtils;
 
@@ -44,9 +45,8 @@ public class HealthBarDecorator implements Renderable { //
             return;
         }
 
-        System.out.println(model.getHealth());
+
         float relativeHealth = (float) model.getHealth() / 100f;
-        System.out.println(relativeHealth);
         TextureRegion healthBarTexture = createHealthBarTexture(relativeHealth);
         Rectangle healthBarRectangle = createHealthBarRectangle();
         drawTextureRegionUnscaled(batch, healthBarTexture, healthBarRectangle, 0f);
@@ -72,7 +72,7 @@ public class HealthBarDecorator implements Renderable { //
         return new TextureRegion(texture);
     }
     private Rectangle createHealthBarRectangle() {
-        Rectangle rectangle = new Rectangle(model.getRectangle());
+        Rectangle rectangle = new Rectangle(((BaseModel) model).getRectangle());
         rectangle.y += HEALTH_BAR_Y_OFFSET;
         return rectangle;
     }

@@ -10,10 +10,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Interpolation;
 import ru.mipt.bit.platformer.abstractions.controllers.CollisionController;
-import ru.mipt.bit.platformer.abstractions.controllers.ModelController;
-import ru.mipt.bit.platformer.abstractions.level.FileLevel;
-import ru.mipt.bit.platformer.abstractions.level.Level;
-import ru.mipt.bit.platformer.abstractions.level.RandomLevel;
+
+import ru.mipt.bit.platformer.abstractions.level.*;
 import ru.mipt.bit.platformer.abstractions.models.BaseModel;
 import ru.mipt.bit.platformer.abstractions.models.Field;
 import ru.mipt.bit.platformer.abstractions.graphics.GraphicsAbstraction;
@@ -34,8 +32,9 @@ public class GameDesktopLauncher implements ApplicationListener {
     private Field field;
     private List<BaseModel> models;
     private TileMovement tileMovement;
-    private ModelController modelController;
     private Level level;
+    private GraphicalLevel graphicalLevel;
+    private LogicalLevel logicalLevel;
     private CollisionController collisionController;
     private ToggleHealthDisplayCommand toggleHealthDisplayCommand;
     Config config = Config.DEFAULT;
@@ -64,14 +63,16 @@ public class GameDesktopLauncher implements ApplicationListener {
             level = new FileLevel("file_loading_test/test1.txt", tileMovement, collisionController);
         }
 
-
         level.generate(models, groundLayer, graphicsAbstraction);
 
         toggleHealthDisplayCommand = new ToggleHealthDisplayCommand(models, batch);
 
-        collisionController.update(models);
-        modelController = new ModelController(models, tileMovement, graphicsAbstraction,
-                collisionController , level.getPlayerTank(), level.getAIControllers(), toggleHealthDisplayCommand); //
+        logicalLevel = new LogicalLevel(models, tileMovement, graphicsAbstraction,
+                collisionController , level.getPlayerTank(), level.getAIControllers());
+
+        graphicalLevel = new GraphicalLevel(graphicsAbstraction, models, toggleHealthDisplayCommand);
+
+        logicalLevel.registerObserver(graphicalLevel);
 
     }
 
@@ -83,20 +84,22 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         float deltaTime = Gdx.graphics.getDeltaTime();
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
+            System.out.println("pressed ..");
+            toggleHealthDisplayCommand.execute();
+        }
 
-        modelController.updateModels(deltaTime);
+        logicalLevel.updateModels(deltaTime);
 
 
-        models.sort(Comparator.comparingInt(model -> -model.getPosition().y));
+        // models.sort(Comparator.comparingInt(model -> -model.getPosition().y));
         field.render();
 
         batch.begin();
 
 
 
-        modelController.renderModels(batch);
-
-        //toggleHealthDisplayCommand.showHealthDisplay();
+        graphicalLevel.renderModels(batch);
 
         batch.end();
     }
@@ -105,7 +108,7 @@ public class GameDesktopLauncher implements ApplicationListener {
     public void dispose() {
         batch.dispose();
         field.dispose();
-        modelController.disposeModels();
+        graphicalLevel.disposeModels();
     }
 
     @Override

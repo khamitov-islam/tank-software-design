@@ -10,16 +10,12 @@ import static ru.mipt.bit.platformer.util.GdxGameUtils.drawTextureRegionUnscaled
 
 public class GraphicsAbstraction {
 
-
     public GraphicsAbstraction() {}
+
     public void render(Batch batch, TextureRegion graphics, Rectangle rectangle, float rotation ) {
         drawTextureRegionUnscaled(batch, graphics, rectangle, rotation);
     }
 
     public void dispose() {
     }
-
-
-
-
 }

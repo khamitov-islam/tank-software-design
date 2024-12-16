@@ -31,5 +31,7 @@ public class AITankController {
         }
         aiTank.updatePosition(tileMovement, deltaTime);
     }
-
+    public Tank getAiTank(){
+        return aiTank;
+    }
 }
