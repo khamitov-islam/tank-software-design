@@ -62,10 +62,10 @@ public abstract class AbstractLevel implements Level {
         return tileMovement.getWidth();
     }
 
-    @Override
-    public CollisionController getCollisionController(){
-        return collisionController;
-    }
+//    @Override
+//    public CollisionController getCollisionController(){
+//        return collisionController;
+//    }
 
     @Override
     public List<AITankController> getAIControllers() {

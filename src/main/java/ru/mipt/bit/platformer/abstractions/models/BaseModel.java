@@ -67,7 +67,4 @@ public abstract class BaseModel {
         getTexture().dispose();
     }
 
-    public boolean isCollides(GridPoint2 point) {
-        return getPosition().equals(point);
-    }
 }

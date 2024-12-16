@@ -3,6 +3,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.abstractions.Liveable;
 import ru.mipt.bit.platformer.abstractions.command.MoveTankCommand;
+import ru.mipt.bit.platformer.abstractions.command.ShootCommand;
 import ru.mipt.bit.platformer.abstractions.graphics.GraphicsAbstraction;
 import ru.mipt.bit.platformer.abstractions.Movable;
 
@@ -16,15 +17,16 @@ import ru.mipt.bit.platformer.util.TileMovement;
 import java.util.Random;
 
 public class Tank extends BaseModel implements Movable, Renderable, Liveable {
-
+    private static final float SHOOT_COOLDOWN = 1.0f; // 1 секунда между выстрелами
     private final float movementSpeed;
-    //private boolean isMoving;
+    private final InputHandler inputHandler;
+    private float currentCooldown = 0;
     private GridPoint2 currentCoordinates;
     private GridPoint2 destinationCoordinates;
     private float movementProgress = 1f;
     private float rotation;
-    private final InputHandler inputHandler;
     private int  health;
+
 
 
     public Tank(String texturePath, GridPoint2 initialCoordinates, float movementSpeed, GraphicsAbstraction graphicsAbstraction, InputHandler inputHandler) {
@@ -37,19 +39,30 @@ public class Tank extends BaseModel implements Movable, Renderable, Liveable {
         this.health = new Random().nextInt(21) + 80; // 80 - 100
     }
 
-    @Override
+    // @Override
     public void handleInput() {
         if (isReadyForNextMove()) {
-            Direction direction = inputHandler.handleInput();
+            Direction direction = inputHandler.handleMovingInput();
             if (direction != null) {
                 MoveTankCommand move = new MoveTankCommand(this, direction);
                 move.execute();
-                //setDestination(direction);
             }
         }
+//        if (canShoot()){
+//            if (inputHandler.handleShootingInput())
+//            {
+//                ShootCommand shot = new ShootCommand(this);
+//                shot.execute();
+//            }
+//        }
+
+    }
+    @Override
+    public void render(Batch batch) {
+        graphicsAbstraction.render(batch, getGraphics(), getRectangle(), rotation);
     }
 
-
+    @Override
     public void move(Direction direction) { //move // setDestination
         if(isReadyForNextMove()) {
             this.destinationCoordinates = direction.move(this.currentCoordinates);
@@ -58,6 +71,7 @@ public class Tank extends BaseModel implements Movable, Renderable, Liveable {
         }
     }
 
+    @Override
     public void updatePosition(TileMovement tileMovement, float deltaTime) {
         tileMovement.moveRectangleBetweenTileCenters(getRectangle(), currentCoordinates, destinationCoordinates, movementProgress);
         movementProgress = continueProgress(movementProgress, deltaTime, movementSpeed);
@@ -66,15 +80,17 @@ public class Tank extends BaseModel implements Movable, Renderable, Liveable {
         }
     }
 
-    public GridPoint2 getCurrentCoordinates() { return currentCoordinates;}
+    public Bullet shoot() {
+        if (canShoot()) {
+            GridPoint2 tankPosition = currentCoordinates;
+            Direction shootDirection = Direction.getDirection(rotation);
+            GridPoint2 bulletPosition = shootDirection.move(tankPosition);
 
-    public GridPoint2 getDestination() {
-        return new GridPoint2(destinationCoordinates);
-    }
-
-    @Override
-    public void render(Batch batch) {
-        graphicsAbstraction.render(batch, getGraphics(), getRectangle(), rotation);
+            currentCooldown = SHOOT_COOLDOWN;
+            // System.out.println("Bullet was created by tank with rotation: " + rotation);
+            return new Bullet(bulletPosition, rotation, graphicsAbstraction, this);
+        }
+        return null;
     }
 
     public void cancelMovement() {
@@ -85,6 +101,17 @@ public class Tank extends BaseModel implements Movable, Renderable, Liveable {
         return isEqual(movementProgress, 1f);
     }
 
+    public boolean canShoot() {
+        return currentCooldown <= 0;
+    }
+
+    public void updateCooldown(float deltaTime) {
+        if (currentCooldown > 0) {
+            currentCooldown -= deltaTime;
+        }
+    }
+
+
     public int getHealth() {
         return health;
     }
@@ -92,4 +119,13 @@ public class Tank extends BaseModel implements Movable, Renderable, Liveable {
     public void setHealth(int health) {
         this.health = health;
     }
+
+    public GridPoint2 getCurrentCoordinates() { return currentCoordinates;}
+
+    public GridPoint2 getDestination() {
+        return new GridPoint2(destinationCoordinates);
+    }
+
+
+
 }

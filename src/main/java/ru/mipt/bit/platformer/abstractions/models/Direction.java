@@ -13,6 +13,8 @@ public enum Direction {
     public float getRotation() {
         return rotation;
     }
+    private static final float EPSILON = 0.01f;
+
 
     public GridPoint2 move(GridPoint2 currentPosition) {
         switch (this) {
@@ -27,5 +29,14 @@ public enum Direction {
             default:
                 throw new IllegalArgumentException("Unknown direction");
         }
+    }
+
+    public static Direction getDirection(float rotation) {
+        for (Direction direction : values()) {
+            if (Math.abs(direction.getRotation() - rotation) < EPSILON) {
+                return direction;
+            }
+        }
+        return null;
     }
 }
