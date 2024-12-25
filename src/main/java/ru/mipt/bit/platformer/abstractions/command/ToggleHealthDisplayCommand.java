@@ -23,7 +23,6 @@ public class ToggleHealthDisplayCommand implements Command{
                 Liveable modelWithHealth = (Liveable) model;
                 modelsWithHealth.add(modelWithHealth);
                 healthBars.put(modelWithHealth, new HealthBarDecorator(modelWithHealth));
-
             }
         }
         this.batch = batch;
@@ -45,5 +44,10 @@ public class ToggleHealthDisplayCommand implements Command{
 
     public boolean isEnabled() {
         return isHealthDisplayEnabled;
+    }
+
+    public void removeModel(Liveable model) {
+        modelsWithHealth.remove(model);
+        healthBars.remove(model);
     }
 }

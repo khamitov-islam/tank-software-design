@@ -3,7 +3,7 @@ package ru.mipt.bit.platformer.abstractions.command;
 import ru.mipt.bit.platformer.abstractions.models.Direction;
 import ru.mipt.bit.platformer.abstractions.models.Tank;
 
-public class MoveTankCommand{
+public class MoveTankCommand implements Command{
     private final Tank tank;
     private final Direction direction;
 

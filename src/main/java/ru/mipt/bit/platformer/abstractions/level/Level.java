@@ -11,10 +11,11 @@ import java.util.List;
 import java.util.Set;
 
 public interface Level {
+
+
     void generate(List<BaseModel> models, TiledMapTileLayer groundLayer, GraphicsAbstraction graphicsAbstraction);
     int getLevelWidth();
     int getLevelHeight();
-    CollisionController getCollisionController();
     List<AITankController> getAIControllers();
     Tank getPlayerTank();
 
