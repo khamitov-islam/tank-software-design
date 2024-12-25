@@ -14,7 +14,7 @@ public class ToggleHealthDisplayCommand implements Command{
     private Batch batch;
     private Map<Liveable, HealthBarDecorator> healthBars;
 
-    public ToggleHealthDisplayCommand(List<BaseModel> models , Batch batch)
+    public ToggleHealthDisplayCommand(List<BaseModel> models , Batch batch) //, Map<Liveable, HealthBarDecorator> healthBars
     {
         modelsWithHealth = new ArrayList<>();
         healthBars = new HashMap<>();
@@ -25,6 +25,7 @@ public class ToggleHealthDisplayCommand implements Command{
                 healthBars.put(modelWithHealth, new HealthBarDecorator(modelWithHealth));
             }
         }
+
         this.batch = batch;
     }
 
@@ -35,10 +36,15 @@ public class ToggleHealthDisplayCommand implements Command{
         HealthBarModel.switchVisible();
     }
 
-    public void showHealthDisplay() { // showHealthDisplay
+    public void showHealthDisplay() {
         for (Liveable model : modelsWithHealth) {
             HealthBarDecorator decorator = healthBars.get(model);
-            decorator.render(batch);
+            if (decorator != null){
+                decorator.render(batch);
+            } else{
+                System.out.println("Warning: Missing decorator for model");
+            }
+
         }
     }
 
