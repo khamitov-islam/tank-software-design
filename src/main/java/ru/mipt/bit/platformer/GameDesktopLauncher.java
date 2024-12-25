@@ -6,20 +6,23 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.math.Interpolation;
-import ru.mipt.bit.platformer.abstractions.controllers.CollisionController;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.mipt.bit.platformer.abstractions.Liveable;
+import ru.mipt.bit.platformer.abstractions.config.Config;
+import ru.mipt.bit.platformer.abstractions.config.GameConfig;
+import org.springframework.core.env.MapPropertySource;
+import java.util.HashMap;
+import java.util.Map;
 
+import ru.mipt.bit.platformer.abstractions.graphics.HealthBarDecorator;
 import ru.mipt.bit.platformer.abstractions.level.*;
 import ru.mipt.bit.platformer.abstractions.models.BaseModel;
 import ru.mipt.bit.platformer.abstractions.models.Field;
 import ru.mipt.bit.platformer.abstractions.graphics.GraphicsAbstraction;
-import ru.mipt.bit.platformer.util.TileMovement;
 import ru.mipt.bit.platformer.abstractions.command.ToggleHealthDisplayCommand;
 
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
@@ -31,49 +34,48 @@ public class GameDesktopLauncher implements ApplicationListener {
     private Batch batch;
     private Field field;
     private List<BaseModel> models;
-    private TileMovement tileMovement;
-    private Level level;
     private GraphicalLevel graphicalLevel;
     private LogicalLevel logicalLevel;
-    private CollisionController collisionController;
     private ToggleHealthDisplayCommand toggleHealthDisplayCommand;
-    Config config = Config.DEFAULT;
+    private final Config gameConfig;
+    private  ApplicationContext context;
+
 
     GameDesktopLauncher (Config config) {
-        this.config = config;
+        this.gameConfig = config;
+    }
 
+    private void initializeSpringContext() {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("game.config", gameConfig);
+        context.getEnvironment().getPropertySources().addFirst(
+                new MapPropertySource("gameProperties", properties)
+        );
+        context.register(GameConfig.class);
+        context.refresh();
+        this.context = context;
     }
 
     @Override
     public void create() {
-        batch = new SpriteBatch();
-        field = new Field("level.tmx", batch);
 
-        TiledMapTileLayer groundLayer = field.getLayer();
-        tileMovement = new TileMovement(groundLayer, Interpolation.smooth);
-        models = new ArrayList<>();
-        GraphicsAbstraction graphicsAbstraction = new GraphicsAbstraction();
-        collisionController = new CollisionController(tileMovement);
+        initializeSpringContext();
 
+        this.models = context.getBean("gameModels", List.class);
+        this.field = context.getBean(Field.class);
+        this.batch = context.getBean(Batch.class);
 
+        Level level = context.getBean(Level.class);
+        level.generate(models, field.getLayer(), context.getBean(GraphicsAbstraction.class));
 
-        if (config == Config.DEFAULT) {
-            level = new RandomLevel(tileMovement, collisionController);
-        } else if (config == Config.FILE) {
-            level = new FileLevel("file_loading_test/test1.txt", tileMovement, collisionController);
-        }
+        this.toggleHealthDisplayCommand = context.getBean(ToggleHealthDisplayCommand.class);
+        this.graphicalLevel = context.getBean(GraphicalLevel.class);
+        this.logicalLevel = context.getBean(LogicalLevel.class);
 
-        level.generate(models, groundLayer, graphicsAbstraction);
-
-        toggleHealthDisplayCommand = new ToggleHealthDisplayCommand(models, batch);
-
-        logicalLevel = new LogicalLevel(models, tileMovement, graphicsAbstraction,
-                collisionController , level.getPlayerTank(), level.getAIControllers());
-
-        graphicalLevel = new GraphicalLevel(graphicsAbstraction, models, toggleHealthDisplayCommand);
-
+        logicalLevel.setPlayerTank(level.getPlayerTank());
+        logicalLevel.setAIControllers(level.getAIControllers());
         logicalLevel.registerObserver(graphicalLevel);
-
     }
 
 
@@ -85,21 +87,19 @@ public class GameDesktopLauncher implements ApplicationListener {
         float deltaTime = Gdx.graphics.getDeltaTime();
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
-            System.out.println("pressed ..");
             toggleHealthDisplayCommand.execute();
         }
 
         logicalLevel.updateModels(deltaTime);
 
-
-        // models.sort(Comparator.comparingInt(model -> -model.getPosition().y));
         field.render();
 
         batch.begin();
 
-
-
         graphicalLevel.renderModels(batch);
+
+        if (toggleHealthDisplayCommand.isEnabled()){
+            toggleHealthDisplayCommand.showHealthDisplay(); }
 
         batch.end();
     }

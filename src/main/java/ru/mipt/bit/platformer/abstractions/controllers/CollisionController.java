@@ -76,6 +76,7 @@ public class CollisionController {
         if (target == null) {
             return false;
         }
+
         // Если цель - это танк, который выстрелил эту пулю, игнорируем столкновение
         if (target instanceof Tank && target == bullet.getShooter()) {
             return false;
@@ -107,7 +108,6 @@ public class CollisionController {
 
         if (tank.getHealth() <= 0) {
             modelsToRemove.add(tank);
-            //todo: удалить иконку жизней погибшего танка
         }
     }
 

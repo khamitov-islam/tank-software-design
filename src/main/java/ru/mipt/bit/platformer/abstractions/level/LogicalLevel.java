@@ -2,9 +2,6 @@ package ru.mipt.bit.platformer.abstractions.level;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.math.GridPoint2;
-import ru.mipt.bit.platformer.abstractions.command.ToggleHealthDisplayCommand;
 import ru.mipt.bit.platformer.abstractions.controllers.AITankController;
 import ru.mipt.bit.platformer.abstractions.controllers.CollisionController;
 import ru.mipt.bit.platformer.abstractions.graphics.GraphicsAbstraction;
@@ -25,23 +22,19 @@ public class LogicalLevel implements Observable {
     private final List<BaseModel> models;
     private final TileMovement tileMovement;
     private final GraphicsAbstraction graphicsAbstraction;
-    private final Tank playerTank;
-    private final List<AITankController> aiControllers;
+    private Tank playerTank;
+    private List<AITankController> aiControllers;
     public CollisionController collisionController;
 
     public LogicalLevel(List<BaseModel> models,
                         TileMovement tileMovement,
                         GraphicsAbstraction graphicsAbstraction,
-                        CollisionController collisionController,
-                        Tank playerTank,
-                        List<AITankController> aiControllers
+                        CollisionController collisionController
     ) {
         this.models = models;
         this.tileMovement = tileMovement;
         this.graphicsAbstraction = graphicsAbstraction;
         this.collisionController = collisionController;
-        this.playerTank = playerTank;
-        this.aiControllers = aiControllers;
     }
 
     @Override
@@ -152,5 +145,13 @@ public class LogicalLevel implements Observable {
             notifyObjectRemoved(model);
         }
 
+    }
+
+    public void setPlayerTank(Tank playerTank) {
+        this.playerTank = playerTank;
+    }
+
+    public void setAIControllers(List<AITankController> aiControllers) {
+        this.aiControllers = aiControllers;
     }
 }

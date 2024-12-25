@@ -44,7 +44,7 @@ public class GraphicalLevel implements Observer{
 
     @Override
     public void onObjectAdded(BaseModel model) {
-        models.add(model);
+            models.add(model);
     }
 
     @Override
